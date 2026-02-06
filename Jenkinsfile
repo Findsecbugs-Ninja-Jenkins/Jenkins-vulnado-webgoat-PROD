@@ -8,7 +8,7 @@ pipeline {
         TARGET_JAR   = 'vulnearblesqlapp-0.0.1-SNAPSHOT.jar'
     }
     triggers {
-        cron '15 21 * * 1,4'  // Runs at 21:15 on every day-of-week from Monday through Friday
+        cron '15 21 * * 1,4'  // Runs at 21:15 on Monday and Thursday
     }
 
     stages {
@@ -24,6 +24,16 @@ pipeline {
                       $TARGET_JAR
                     '''
                 }
+            }
+        }
+        stage('Security Scan') {
+            steps {
+                registerSecurityScan(
+                    // Security Scan to include
+                    artifacts: "findsecbugs-report.sarif",
+                    format: "sarif",
+                    archive: true
+                )
             }
         }
 
